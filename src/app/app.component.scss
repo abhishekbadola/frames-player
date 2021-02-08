@@ -264,10 +264,13 @@
       .file-name {
         font-weight: bold;
         font-size: 1.875rem;
-        line-height: 24px;
         color: #b9b9b9;
         position: absolute;
-        top: -48px;
+        top: -40px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
       }
     }
   }

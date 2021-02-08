@@ -2,7 +2,7 @@
   <header class="video-header">Sample Video</header>
   <div class="frame-img">
     <div class="resizable-container" #imgContainer [class.empty-placeholder]="!nextFrame">
-      <img class="video-frame" #videoFrame>
+      <img class="video-frame" #videoFrame crossorigin="anonymous">
       <label class="subtitle-text" [hidden]="!subtitleText">{{ subtitleText }}</label>
     </div>
   </div>
@@ -56,7 +56,7 @@
       <button class="btn add-frame" [hidden]="addFrameStep > 1" (click)="clickedAddFrame()">{{ addFrameStep === 1 ?
         'Upload frame' : 'Add a frame' }}</button>
 
-      <input [hidden]="true" type="file" accept="image/*" multiple #selectFiles (change)="onFramesSelected($event)">
+      <input [hidden]="true" type="file" accept="image/*" #selectFiles (change)="onFramesSelected($event)">
 
       <button class="btn close" [hidden]="!addFrameStep" (click)="cancelAddFrame()">X</button>
 
@@ -72,3 +72,9 @@
     </div>
   </div>
 </section>
+
+<div hidden>
+  <!-- Preloading a 50 images at a time before the animation runs -->
+  <img *ngFor="let item of loadImgArray; let i = index" (load)="imagePreLoaded(i)" (error)="imagePreLoaded(i)"
+    [src]="(framesBaseURL + '/s_000' + '0000'.substr(item.toString().length - 1) + item + '.jpg')">
+</div>

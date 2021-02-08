@@ -1,5 +1,4 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -7,55 +6,68 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  private currentFrameID;
-  private framesData = [];
+  private currentFrameID; // To animate frames
   private startTime = Date.now();
+  private lastFrameData;
+  private loadedImagesCount = 0;
+
   private readonly fps = 10;
+  private readonly totalFrames = 11272;
+
+  readonly framesBaseURL = `https://abhishekbadola.github.io/frames-player/assets/frames`;
+  readonly preloadImgCount = 50; // Minimum images count to preload
+  readonly loadImgArray = []; // Starting with preload images count
 
   nextFrame = 0;
   isPlaying = false;
   size = 'original';
   subtitleText = '';
-  frameLength = 1/this.fps;
+  frameLength = 1 / this.fps;
   addFrameStep = 0;
   selectedFile;
+  loadedImageArray = []; // To verify the set of loaded images
 
   @ViewChild('imgContainer', { static: true }) imgContainerRef: ElementRef;
   @ViewChild('videoFrame', { static: true }) videoFrameRef: ElementRef;
   @ViewChild('selectFiles', { static: true }) selectFilesRef: ElementRef;
 
   ngOnInit() {
+    for (let i = 0; i < this.preloadImgCount; i++) {
+      this.loadImgArray[i] = i + 1;
+    }
+  }
+
+  imagePreLoaded(index) {
+    // Keeping a delay to avoid UI blocking
+    const timeout = setTimeout(() => {
+      this.loadedImageArray[index] = this.loadImgArray[index];
+      clearTimeout(timeout);
+    }, 0);
   }
 
   loadVideoFrame() {
     const now = Date.now();
     const diff = now - this.startTime;
-    const frameData = (this.framesData || [])[this.nextFrame - 1];
-    const delayInSecs = (frameData || {}).delayInSeconds || 1/this.fps;
+    const delayInSecs = (this.lastFrameData || {} as any).delayInSeconds || 1 / this.fps;
 
     if (diff >= delayInSecs * 1000) {
       // If the page is not visible
       // That is when you switch tabs or any window
-      let imgName = 's_000';
-      let imgSequence = this.nextFrame.toString();
-      let imgPath = (frameData || {}).src || '';
-
-      for (let i = 5; i > imgSequence.length; i--) {
-        imgName += '0';
-      }
-      imgName += imgSequence;
-
-      imgPath = `./assets/frames/${imgName}.jpg`;
-
-      this.framesData.push({
-        name: `${imgName}.jpg`,
-        src: imgPath,
-        delayInSeconds: 1/this.fps
-      });
+      let imgName = 's_000' + '0000'.substr(this.nextFrame.toString().length - 1) + this.nextFrame;
+      let imgPath = `${this.framesBaseURL}/${imgName}.jpg`;
 
       (this.videoFrameRef.nativeElement as HTMLImageElement).src = imgPath;
 
+      this.lastFrameData = {
+        name: `${imgName}.jpg`,
+        src: imgPath,
+        delayInSeconds: 1 / this.fps
+      };
+
+      this.preloadImages();
+
       this.nextFrame++; // Update count for loading next frame
+      this.loadedImagesCount++;
 
       this.startTime = now;
     }
@@ -64,10 +76,57 @@ export class AppComponent {
     this.currentFrameID = requestAnimationFrame(this.loadVideoFrame.bind(this));
   }
 
+  preloadImages(keepLoading = false) {
+    if (this.loadImgArray[this.loadImgArray.length - 1] >= this.totalFrames) {
+      // Pausing video at current frame
+      this.isPlaying = false;
+      cancelAnimationFrame(this.currentFrameID);
+      return;
+    }
+
+    // If already set image sources are loaded
+    if (this.loadedImageArray.length === this.preloadImgCount) {
+      // If the frame sequence reaches at multiple of 50
+      if (this.loadedImagesCount % this.preloadImgCount === 0) {
+        this.loadedImageArray = [];
+        // Then reset image resources to load new images in advance
+        for (let i = 0; i < this.preloadImgCount; i++) {
+          const nextImageCount = this.loadImgArray[i] + this.preloadImgCount;
+          if (nextImageCount >= this.totalFrames) {
+            // Pausing video at current frame
+            this.isPlaying = false;
+            cancelAnimationFrame(this.currentFrameID);
+            return;
+          } else {
+            this.loadImgArray[i] = nextImageCount;
+          }
+        }
+      }
+      if (keepLoading) {
+        // If player is paused or running in background keep the advance image loading
+        this.loadedImagesCount++;
+        this.checkIfImagesArePreLoaded();
+      }
+    } else {
+      // If previously set image sources are still pending
+      this.checkIfImagesArePreLoaded();
+    }
+  }
+
+  private checkIfImagesArePreLoaded() {
+    const timeout = setTimeout(() => {
+      this.preloadImages(true);
+      clearTimeout(timeout);
+    }, 0);
+  }
+
   startVideo() {
     // Play video
     this.isPlaying = true;
-    if (!this.nextFrame) this.nextFrame++;
+    if (!this.nextFrame) {
+      this.nextFrame++;
+      this.loadedImagesCount = this.nextFrame;
+    }
     this.startTime = Date.now();
     this.loadVideoFrame();
   }
@@ -76,6 +135,9 @@ export class AppComponent {
     // Pausing video at current frame
     this.isPlaying = false;
     cancelAnimationFrame(this.currentFrameID);
+
+    // Keep lazy loading images on while the video frames are pause
+    this.checkIfImagesArePreLoaded();
     return;
   }
 
@@ -117,21 +179,13 @@ export class AppComponent {
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
-        if (selectedFiles.length > 1) {
-          this.framesData.push({
-            name: file.name,
-            src: e.target.result as string,
-            delayInSeconds: 1/this.fps
-          });
-        } else {
-          this.selectedFile = {
-            name: file.name,
-            src: e.target.result as string,
-            delayInSeconds: 1/this.fps
-          }
-
-          this.selectFilesRef.nativeElement.value = '';
+        this.selectedFile = {
+          name: file.name,
+          src: e.target.result as string,
+          delayInSeconds: 1 / this.fps
         }
+
+        this.selectFilesRef.nativeElement.value = '';
       };
 
       reader.readAsDataURL(file);
@@ -151,15 +205,15 @@ export class AppComponent {
 
   submitAddFrame() {
     this.selectedFile.delayInSeconds = this.frameLength;
-    this.framesData.push({
+    this.lastFrameData = {
       ...this.selectedFile
-    });
+    };
 
     const img = (this.videoFrameRef.nativeElement as HTMLImageElement);
     img.src = this.selectedFile.src;
 
     this.selectedFile = null;
-    this.frameLength = 1/this.fps;
+    this.frameLength = 1 / this.fps;
     this.addFrameStep = 0;
   }
 
@@ -167,6 +221,6 @@ export class AppComponent {
     this.selectFilesRef.nativeElement.value = '';
     this.addFrameStep = 0;
     this.selectedFile = null;
-    this.frameLength = 1/this.fps;
+    this.frameLength = 1 / this.fps;
   }
 }
