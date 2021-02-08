@@ -1,0 +1,274 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  background-color: #fff;
+  padding: 1rem 2rem;
+  min-height: 100%;
+
+  .frames-container {
+    flex: 1;
+    margin-bottom: 38px;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+
+    .frame-img {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50vh;
+      max-height: 420px;
+      width: 100%;
+
+      .resizable-container {
+        width: max-content;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 48px;
+        overflow: hidden;
+        background: linear-gradient(
+          180deg,
+          #000000 0%,
+          rgba(0, 0, 0, 0.5) 51.04%,
+          #000000 100%
+        );
+        position: relative;
+
+        &.empty-placeholder {
+          width: 100%;
+          background: linear-gradient(
+            180deg,
+            #000000 0%,
+            rgba(0, 0, 0, 0.5) 51.04%,
+            #000000 100%
+          );
+        }
+
+        .subtitle-text {
+          background: rgba(0, 0, 0, 0.9);
+          border-radius: 10px;
+          font-weight: 600;
+          font-size: 1rem;
+          line-height: 24px;
+          color: #ffe456;
+          position: absolute;
+          bottom: 36px;
+          width: 90%;
+          padding: 12px;
+          text-align: center;
+          mix-blend-mode: normal;
+          min-height: 48px;
+        }
+
+        .video-frame {
+          object-fit: contain;
+          display: block;
+          max-height: 100%;
+          max-width: 100%;
+        }
+      }
+    }
+  }
+
+  .resize-container {
+    width: 300px;
+    padding: 0 1rem;
+
+    .resize-options {
+      .options {
+        list-style-type: none;
+        .list-item {
+          display: flex;
+          align-items: center;
+          padding: 0 16px;
+          height: 76px;
+
+          &,
+          * {
+            cursor: pointer;
+          }
+
+          &.active {
+            background-color: rgba(251, 109, 58, 0.1);
+          }
+
+          .resize-icon {
+            background-color: #fb6d3a;
+            height: 56px;
+            width: 56px;
+            border-radius: 16px;
+            padding: 18px;
+            margin-right: 16px;
+          }
+          .resize-label {
+            display: inline-flex;
+            justify-content: center;
+            flex-direction: column;
+            span {
+              margin-bottom: 2px;
+              font-weight: 500;
+              font-size: 1.125rem;
+              line-height: 27px;
+            }
+            small {
+              font-size: 0.875rem;
+              line-height: 21px;
+              color: #b3b6b6;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .actions-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    height: max-content;
+
+    * {
+      outline: none;
+      border: none;
+    }
+
+    .btn-play {
+      outline: none;
+      border: none;
+      background-color: #fff;
+      cursor: pointer;
+      width: max-content;
+
+      :active {
+        opacity: 0.625;
+      }
+
+      :hover {
+        opacity: 0.75;
+      }
+    }
+
+    .subtitle-input {
+      border-bottom: 6px solid #f1f1ef;
+      font-weight: 500;
+      font-size: 1.5rem;
+      line-height: 36px;
+      height: 60px;
+      width: 60%;
+
+      &::placeholder {
+        color: #c8c8c7;
+      }
+    }
+
+    .add-frame-actions {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+
+      .actions {
+        *.btn {
+          cursor: pointer;
+        }
+
+        .add-frame {
+          background: #ff9735;
+          box-shadow: 0px 12px 20px -8px #ffbf60;
+          border-radius: 6px;
+          width: 236px;
+          height: 160px;
+          color: #fff;
+          font-weight: bold;
+          font-size: 1.875rem;
+          line-height: 24px;
+        }
+        .btn.close {
+          position: absolute;
+          width: 42px;
+          height: 42px;
+          font-weight: bold;
+          font-size: 30px;
+          line-height: 24px;
+          color: #ffffff;
+          border-radius: 50%;
+          top: -20px;
+          right: -16px;
+          background: linear-gradient(
+            159.16deg,
+            #ff9735 26.46%,
+            #ff9735 116.55%
+          );
+          box-shadow: 0px 5px 10px rgba(55, 46, 152, 0.65),
+            inset 10px 10px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .submit-frame {
+          display: flex;
+          align-items: center;
+          justify-content: space-evenly;
+          flex-direction: column;
+
+          hr {
+            height: 4px;
+            width: 80%;
+            border-bottom: 3px solid #D87315;
+          }
+
+          .btn-submit {
+            font-weight: bold;
+            font-size: 1.875rem;
+            line-height: 24px;
+            color: #ffffff;
+            width: 100%;
+            background-color: transparent;
+          }
+        }
+
+        .length-input {
+          display: flex;
+          align-items: center;
+
+          label {
+            font-weight: bold;
+            font-size: 1.875rem;
+            line-height: 24px;
+            color: #ffffff;
+            margin-right: 4px;
+          }
+
+          input {
+            width: 40px;
+            background-color: #fff;
+            margin-right: 4px;
+            padding: 2px;
+            font-weight: bold;
+            padding: 4px;
+            line-height: 4px;
+            font-size: 1.5rem;
+          }
+
+          span {
+            font-weight: bold;
+            font-size: 1.25rem;
+            line-height: 24px;
+            color: #ffffff;
+          }
+        }
+      }
+
+      .file-name {
+        font-weight: bold;
+        font-size: 1.875rem;
+        line-height: 24px;
+        color: #b9b9b9;
+        position: absolute;
+        top: -48px;
+      }
+    }
+  }
+}

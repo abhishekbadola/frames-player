@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0 4rem;
+  background-color: #503E9D;
+  height: 100vh;
+  overflow: auto;
+}
+
+.video-header {
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 2.625rem;
+  margin-bottom: 16px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+[hidden] {
+  display: none !important;
+}
