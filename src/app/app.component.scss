@@ -23,7 +23,8 @@
 
       .resizable-container {
         width: max-content;
-        height: 100%;
+        height: max-content;
+        max-height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -216,16 +217,17 @@
           hr {
             height: 4px;
             width: 80%;
-            border-bottom: 3px solid #D87315;
+            border-bottom: 3px solid #d87315;
           }
 
           .btn-submit {
             font-weight: bold;
             font-size: 1.875rem;
-            line-height: 24px;
             color: #ffffff;
             width: 100%;
             background-color: transparent;
+            height: 40px;
+            cursor: pointer;
           }
         }
 
@@ -274,4 +276,12 @@
       }
     }
   }
+}
+
+.fps-meter {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  color: #dddddd;
+  font-size: .5rem;
 }

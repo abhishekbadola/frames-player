@@ -1,8 +1,10 @@
 <section class="frames-container">
   <header class="video-header">Sample Video</header>
   <div class="frame-img">
-    <div class="resizable-container" #imgContainer [class.empty-placeholder]="!nextFrame">
-      <img class="video-frame" #videoFrame crossorigin="anonymous">
+    <div class="resizable-container" [style.height]="videoFrameRef.nativeElement?.src ? '' : '100%'"
+      [style.width]="videoFrameRef.nativeElement?.src ? '' : '100%'" #imgContainer
+      [class.empty-placeholder]="!nextFrame">
+      <img class="video-frame" #videoFrame (load)="videoFrameLoaded()">
       <label class="subtitle-text" [hidden]="!subtitleText">{{ subtitleText }}</label>
     </div>
   </div>
@@ -43,17 +45,18 @@
   </div>
 </section>
 <section class="actions-container">
-  <button class="btn-play" (click)="!isPlaying ? startVideo() : pauseVideo()">
+  <button class="btn-play" [class.disabled]="addFrameStep" (click)="!isPlaying ? startVideo() : pauseVideo()">
     <img src="./assets/icons/ic-play.svg">
   </button>
 
-  <input type="text" [readOnly]="isPlaying" [(ngModel)]="subtitleText" class="subtitle-input"
-    placeholder="Enter Subtitle Text here">
+  <input type="text" [class.disabled]="isPlaying" [readOnly]="isPlaying" [(ngModel)]="subtitleText"
+    class="subtitle-input" placeholder="Enter Subtitle Text here">
 
   <div class="add-frame-actions">
     <label class="file-name" [hidden]="!selectedFile?.name">{{ selectedFile?.name }}</label>
     <div class="actions">
-      <button class="btn add-frame" [hidden]="addFrameStep > 1" (click)="clickedAddFrame()">{{ addFrameStep === 1 ?
+      <button class="btn add-frame" [class.disabled]="isPlaying" [hidden]="addFrameStep > 1"
+        (click)="clickedAddFrame()">{{ addFrameStep === 1 ?
         'Upload frame' : 'Add a frame' }}</button>
 
       <input [hidden]="true" type="file" accept="image/*" #selectFiles (change)="onFramesSelected($event)">
@@ -63,7 +66,7 @@
       <div class="submit-frame add-frame" [hidden]="addFrameStep < 2">
         <div class="length-input">
           <label>Length</label>
-          <input type="number" min="0.1" [(ngModel)]="frameLength">
+          <input type="number" min="0.1" [(ngModel)]="timePerFrameInSeconds">
           <span>secs</span>
         </div>
         <hr>
@@ -78,3 +81,5 @@
   <img *ngFor="let item of loadImgArray; let i = index" (load)="imagePreLoaded(i)" (error)="imagePreLoaded(i)"
     [src]="(framesBaseURL + '/s_000' + '0000'.substr(item.toString().length - 1) + item + '.jpg')">
 </div>
+
+<small class="fps-meter">@{{dynamicFPSMeter.toFixed(2)}} fps</small>

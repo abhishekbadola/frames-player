@@ -7,12 +7,13 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 })
 export class AppComponent {
   private currentFrameID; // To animate frames
-  private startTime = Date.now();
-  private lastFrameData;
+  private lastFrameTime = Date.now();
+  private lastFrameData; // To hold uploaded frame data
   private loadedImagesCount = 0;
+  private isVideoFrameLoading = false; // To check whether the changed frame is loaded or not
 
-  private readonly fps = 10;
   private readonly totalFrames = 11272;
+  private timePerFrameInMilliseconds = 100; // 1000(1 second) / 10(frames per second) = 100 ms per frame;
 
   readonly framesBaseURL = `https://abhishekbadola.github.io/frames-player/assets/frames`;
   readonly preloadImgCount = 50; // Minimum images count to preload
@@ -22,10 +23,11 @@ export class AppComponent {
   isPlaying = false;
   size = 'original';
   subtitleText = '';
-  frameLength = 1 / this.fps;
+  timePerFrameInSeconds = this.timePerFrameInMilliseconds / 1000; // To manually enter time per frame in seconds
   addFrameStep = 0;
   selectedFile;
   loadedImageArray = []; // To verify the set of loaded images
+  dynamicFPSMeter = 10;
 
   @ViewChild('imgContainer', { static: true }) imgContainerRef: ElementRef;
   @ViewChild('videoFrame', { static: true }) videoFrameRef: ElementRef;
@@ -35,6 +37,10 @@ export class AppComponent {
     for (let i = 0; i < this.preloadImgCount; i++) {
       this.loadImgArray[i] = i + 1;
     }
+  }
+
+  videoFrameLoaded() {
+    this.isVideoFrameLoading = false;
   }
 
   imagePreLoaded(index) {
@@ -47,21 +53,22 @@ export class AppComponent {
 
   loadVideoFrame() {
     const now = Date.now();
-    const diff = now - this.startTime;
-    const delayInSecs = (this.lastFrameData || {} as any).delayInSeconds || 1 / this.fps;
+    const diff = now - this.lastFrameTime;
+    const timePerFrame = (this.lastFrameData || {} as any).millisecondsPerFrame || this.timePerFrameInMilliseconds;
 
-    if (diff >= delayInSecs * 1000) {
+    if (diff >= timePerFrame && !this.isVideoFrameLoading) {
       // If the page is not visible
       // That is when you switch tabs or any window
       let imgName = 's_000' + '0000'.substr(this.nextFrame.toString().length - 1) + this.nextFrame;
       let imgPath = `${this.framesBaseURL}/${imgName}.jpg`;
 
+      this.isVideoFrameLoading = true;
       (this.videoFrameRef.nativeElement as HTMLImageElement).src = imgPath;
 
       this.lastFrameData = {
         name: `${imgName}.jpg`,
         src: imgPath,
-        delayInSeconds: 1 / this.fps
+        millisecondsPerFrame: this.timePerFrameInMilliseconds
       };
 
       this.preloadImages();
@@ -69,18 +76,20 @@ export class AppComponent {
       this.nextFrame++; // Update count for loading next frame
       this.loadedImagesCount++;
 
-      this.startTime = now;
+      this.lastFrameTime = now;
+
+      // Just to test at which speed frames are loading
+      this.dynamicFPSMeter = 1000 / diff;
     }
 
-    // For better performance, using requestAnimationFrame API
-    this.currentFrameID = requestAnimationFrame(this.loadVideoFrame.bind(this));
+    if (this.nextFrame < this.totalFrames) {
+      // For better performance, using requestAnimationFrame API
+      this.currentFrameID = requestAnimationFrame(this.loadVideoFrame.bind(this));
+    }
   }
 
   preloadImages(keepLoading = false) {
     if (this.loadImgArray[this.loadImgArray.length - 1] >= this.totalFrames) {
-      // Pausing video at current frame
-      this.isPlaying = false;
-      cancelAnimationFrame(this.currentFrameID);
       return;
     }
 
@@ -93,9 +102,6 @@ export class AppComponent {
         for (let i = 0; i < this.preloadImgCount; i++) {
           const nextImageCount = this.loadImgArray[i] + this.preloadImgCount;
           if (nextImageCount >= this.totalFrames) {
-            // Pausing video at current frame
-            this.isPlaying = false;
-            cancelAnimationFrame(this.currentFrameID);
             return;
           } else {
             this.loadImgArray[i] = nextImageCount;
@@ -127,7 +133,7 @@ export class AppComponent {
       this.nextFrame++;
       this.loadedImagesCount = this.nextFrame;
     }
-    this.startTime = Date.now();
+    this.lastFrameTime = Date.now();
     this.loadVideoFrame();
   }
 
@@ -144,6 +150,7 @@ export class AppComponent {
   resizeVideo(size: string) {
     let width;
     let fit = 'cover';
+    let containerHeight = '100%'
 
     this.size = size;
 
@@ -164,8 +171,10 @@ export class AppComponent {
       default:
         width = '';
         fit = '';
+        containerHeight = '';
     }
 
+    this.imgContainerRef.nativeElement.style.height = containerHeight;
     this.imgContainerRef.nativeElement.style.width = width;
     this.videoFrameRef.nativeElement.style.width = width;
     this.videoFrameRef.nativeElement.style['object-fit'] = fit;
@@ -182,7 +191,7 @@ export class AppComponent {
         this.selectedFile = {
           name: file.name,
           src: e.target.result as string,
-          delayInSeconds: 1 / this.fps
+          millisecondsPerFrame: this.timePerFrameInMilliseconds
         }
 
         this.selectFilesRef.nativeElement.value = '';
@@ -204,23 +213,27 @@ export class AppComponent {
   }
 
   submitAddFrame() {
-    this.selectedFile.delayInSeconds = this.frameLength;
-    this.lastFrameData = {
-      ...this.selectedFile
-    };
+    if (this.timePerFrameInSeconds > 0) {
+      this.selectedFile.millisecondsPerFrame = this.timePerFrameInSeconds * 1000;
+      this.lastFrameData = {
+        ...this.selectedFile
+      };
 
-    const img = (this.videoFrameRef.nativeElement as HTMLImageElement);
-    img.src = this.selectedFile.src;
+      const img = (this.videoFrameRef.nativeElement as HTMLImageElement);
+      img.src = this.selectedFile.src;
 
-    this.selectedFile = null;
-    this.frameLength = 1 / this.fps;
-    this.addFrameStep = 0;
+      this.selectedFile = null;
+      this.timePerFrameInSeconds = this.timePerFrameInMilliseconds * 1000;
+      this.addFrameStep = 0;
+    } else {
+      console.error('Enter a valid number for time in seconds');
+    }
   }
 
   cancelAddFrame() {
     this.selectFilesRef.nativeElement.value = '';
     this.addFrameStep = 0;
     this.selectedFile = null;
-    this.frameLength = 1 / this.fps;
+    this.timePerFrameInSeconds = this.timePerFrameInMilliseconds * 1000;
   }
 }
