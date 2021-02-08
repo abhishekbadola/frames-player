@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1612805303142,
+  "timestamp": 1612819214404,
   "index": "https://abhishekbadola.github.io/frames-player/index.html",
   "assetGroups": [
     {
@@ -8,14 +8,14 @@
       "installMode": "prefetch",
       "updateMode": "prefetch",
       "urls": [
-        "https://abhishekbadola.github.io/frames-player/main-es2015.e310a729d494c1ad22b1.js",
-        "https://abhishekbadola.github.io/frames-player/main-es5.e310a729d494c1ad22b1.js",
+        "https://abhishekbadola.github.io/frames-player/main-es2015.2a3c65c203d63e643778.js",
+        "https://abhishekbadola.github.io/frames-player/main-es5.2a3c65c203d63e643778.js",
         "https://abhishekbadola.github.io/frames-player/manifest.webmanifest",
         "https://abhishekbadola.github.io/frames-player/polyfills-es2015.ffa9bb4e015925544f91.js",
         "https://abhishekbadola.github.io/frames-player/polyfills-es5.44547b4d4a23c72d0f9c.js",
         "https://abhishekbadola.github.io/frames-player/runtime-es2015.cdfb0ddb511f65fdc0a0.js",
         "https://abhishekbadola.github.io/frames-player/runtime-es5.cdfb0ddb511f65fdc0a0.js",
-        "https://abhishekbadola.github.io/frames-player/styles.6fde78ed0a77fd5a4635.css"
+        "https://abhishekbadola.github.io/frames-player/styles.e88de0dd71a7eeff1f72.css"
       ],
       "patterns": []
     },
@@ -22576,14 +22576,14 @@
     "https://abhishekbadola.github.io/frames-player/assets/frames/s_00011270.jpg": "eaf351ab6b8d575587e770c33ec007b2ac3a0132",
     "https://abhishekbadola.github.io/frames-player/assets/frames/s_00011271.jpg": "c84247fa1e6e70484e25b20062b2654c9b40c78a",
     "https://abhishekbadola.github.io/frames-player/assets/frames/s_00011272.jpg": "be2ac8ad95d77ca49b385811d46beef8811c08ed",
-    "https://abhishekbadola.github.io/frames-player/main-es2015.e310a729d494c1ad22b1.js": "23a22a328cf5d8cec6b1665749153e19d3ad5840",
-    "https://abhishekbadola.github.io/frames-player/main-es5.e310a729d494c1ad22b1.js": "5e59dd38aa510ca9b4f51abfd5d00aac67bce28f",
+    "https://abhishekbadola.github.io/frames-player/main-es2015.2a3c65c203d63e643778.js": "917d0dbf80cb2979755bd89555a52ff093fdda42",
+    "https://abhishekbadola.github.io/frames-player/main-es5.2a3c65c203d63e643778.js": "164be4d8d71dbaa79b53f55f34f92d5273accfd5",
     "https://abhishekbadola.github.io/frames-player/manifest.webmanifest": "f9423dceb86e960489f3bc1c2f4685a0d5ab401f",
     "https://abhishekbadola.github.io/frames-player/polyfills-es2015.ffa9bb4e015925544f91.js": "79b2ff5ba292ae9e56f0b43982b9e76d9ddcf285",
     "https://abhishekbadola.github.io/frames-player/polyfills-es5.44547b4d4a23c72d0f9c.js": "ee074d163edc0215cfc1ce2bfe58fcab8cf13024",
     "https://abhishekbadola.github.io/frames-player/runtime-es2015.cdfb0ddb511f65fdc0a0.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
     "https://abhishekbadola.github.io/frames-player/runtime-es5.cdfb0ddb511f65fdc0a0.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "https://abhishekbadola.github.io/frames-player/styles.6fde78ed0a77fd5a4635.css": "8babf97bf87eefa2dc3e15828e0f0e4d7c934766"
+    "https://abhishekbadola.github.io/frames-player/styles.e88de0dd71a7eeff1f72.css": "391fe5383c31ba3a433a9f4671106e57464bae13"
   },
   "navigationUrls": [
     {
