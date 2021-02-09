@@ -7,23 +7,37 @@
       "installMode": "prefetch",
       "resources": {
         "files": [
+          "/favicon.ico",
           "/manifest.webmanifest",
           "/*.css",
           "/*.js"
         ]
       }
-    }, {
+    },
+    {
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/frames/**",
+          "/assets/**",
           "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
         ],
         "urls": [
-          "**/assets/frames/**"
+          "/**/assets/**/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
         ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "dynamicResources",
+      "urls": [
+        "/**/assets/**/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+      ],
+      "cacheConfig": {
+        "maxSize": 12000,
+        "maxAge": "7d"
       }
     }
   ]

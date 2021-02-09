@@ -1,123 +1,128 @@
 :host {
-  display: flex;
-  flex-wrap: wrap;
   width: 100%;
-  background-color: #fff;
   padding: 1rem 2rem;
   min-height: 100%;
+  background-color: #fff;
+  display: block;
 
-  .frames-container {
-    flex: 1;
-    margin-bottom: 38px;
-    padding: 0 1rem;
+  .top {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
 
-    .frame-img {
+    .frames-container {
+      flex: 1;
+      margin-bottom: 38px;
+      padding: 0 1rem;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50vh;
-      max-height: 420px;
-      width: 100%;
+      flex-direction: column;
 
-      .resizable-container {
-        width: max-content;
-        height: max-content;
-        max-height: 100%;
+      .frame-img {
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: 48px;
-        overflow: hidden;
-        background: linear-gradient(
-          180deg,
-          #000000 0%,
-          rgba(0, 0, 0, 0.5) 51.04%,
-          #000000 100%
-        );
-        position: relative;
+        height: 50vh;
+        max-height: 420px;
+        min-height: 300px;
+        width: 100%;
 
-        &.empty-placeholder {
+        .resizable-container {
           width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 48px;
+          overflow: hidden;
           background: linear-gradient(
             180deg,
             #000000 0%,
             rgba(0, 0, 0, 0.5) 51.04%,
             #000000 100%
           );
-        }
+          position: relative;
 
-        .subtitle-text {
-          background: rgba(0, 0, 0, 0.9);
-          border-radius: 10px;
-          font-weight: 600;
-          font-size: 1rem;
-          line-height: 24px;
-          color: #ffe456;
-          position: absolute;
-          bottom: 36px;
-          width: 90%;
-          padding: 12px;
-          text-align: center;
-          mix-blend-mode: normal;
-          min-height: 48px;
-        }
+          &.empty-placeholder {
+            width: 100%;
+            background: linear-gradient(
+              180deg,
+              #000000 0%,
+              rgba(0, 0, 0, 0.5) 51.04%,
+              #000000 100%
+            );
+          }
 
-        .video-frame {
-          object-fit: contain;
-          display: block;
-          max-height: 100%;
-          max-width: 100%;
+          .subtitle-text {
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 24px;
+            color: #ffe456;
+            position: absolute;
+            bottom: 36px;
+            max-width: 90%;
+            padding: 12px 48px;
+            text-align: center;
+            mix-blend-mode: normal;
+            min-height: 48px;
+          }
+
+          .video-frame {
+            object-fit: contain;
+            display: block;
+            max-height: 100%;
+            max-width: 100%;
+          }
         }
       }
     }
-  }
 
-  .resize-container {
-    width: 300px;
-    padding: 0 1rem;
+    .resize-container {
+      width: 300px;
+      padding: 0 1rem;
 
-    .resize-options {
-      .options {
-        list-style-type: none;
-        .list-item {
-          display: flex;
-          align-items: center;
-          padding: 0 16px;
-          height: 76px;
+      .resize-options {
+        .options {
+          list-style-type: none;
+          .list-item {
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            height: 72px;
 
-          &,
-          * {
-            cursor: pointer;
-          }
-
-          &.active {
-            background-color: rgba(251, 109, 58, 0.1);
-          }
-
-          .resize-icon {
-            background-color: #fb6d3a;
-            height: 56px;
-            width: 56px;
-            border-radius: 16px;
-            padding: 18px;
-            margin-right: 16px;
-          }
-          .resize-label {
-            display: inline-flex;
-            justify-content: center;
-            flex-direction: column;
-            span {
-              margin-bottom: 2px;
-              font-weight: 500;
-              font-size: 1.125rem;
-              line-height: 27px;
+            &,
+            * {
+              cursor: pointer;
             }
-            small {
-              font-size: 0.875rem;
-              line-height: 21px;
-              color: #b3b6b6;
+
+            &.active {
+              background-color: rgba(251, 109, 58, 0.1);
+            }
+
+            .resize-icon {
+              background-color: #fb6d3a;
+              height: 54px;
+              width: 54px;
+              border-radius: 16px;
+              padding: 18px;
+              margin-right: 16px;
+            }
+            .resize-label {
+              display: inline-flex;
+              justify-content: center;
+              flex-direction: column;
+              span {
+                margin-bottom: 2px;
+                font-weight: 500;
+                font-size: 1.125rem;
+                line-height: 27px;
+              }
+              small {
+                font-size: 0.875rem;
+                line-height: 21px;
+                color: #b3b6b6;
+              }
             }
           }
         }
@@ -144,6 +149,12 @@
       background-color: #fff;
       cursor: pointer;
       width: max-content;
+      transform: rotate(180deg);
+      transition: transform 0.5s;
+
+      &.paused {
+        transform: rotate(0deg);
+      }
 
       :active {
         opacity: 0.625;
@@ -173,6 +184,8 @@
       flex-direction: column;
 
       .actions {
+        width: 236px;
+        height: 160px;
         *.btn {
           cursor: pointer;
         }
@@ -181,8 +194,8 @@
           background: #ff9735;
           box-shadow: 0px 12px 20px -8px #ffbf60;
           border-radius: 6px;
-          width: 236px;
-          height: 160px;
+          width: 100%;
+          height: 100%;
           color: #fff;
           font-weight: bold;
           font-size: 1.875rem;
@@ -226,7 +239,6 @@
             color: #ffffff;
             width: 100%;
             background-color: transparent;
-            height: 40px;
             cursor: pointer;
           }
         }
@@ -267,12 +279,12 @@
         font-weight: bold;
         font-size: 1.875rem;
         color: #b9b9b9;
-        position: absolute;
-        top: -40px;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        width: 100%;
+        width: 236px;
+        position: absolute;
+        top: -48px;
       }
     }
   }
@@ -283,5 +295,5 @@
   bottom: 16px;
   left: 16px;
   color: #dddddd;
-  font-size: .5rem;
+  font-size: 0.5rem;
 }

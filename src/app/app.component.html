@@ -1,51 +1,54 @@
-<section class="frames-container">
-  <header class="video-header">Sample Video</header>
-  <div class="frame-img">
-    <div class="resizable-container" [style.height]="videoFrameRef.nativeElement?.src ? '' : '100%'"
-      [style.width]="videoFrameRef.nativeElement?.src ? '' : '100%'" #imgContainer
-      [class.empty-placeholder]="!nextFrame">
-      <img class="video-frame" #videoFrame (load)="videoFrameLoaded()">
-      <label class="subtitle-text" [hidden]="!subtitleText">{{ subtitleText }}</label>
+<main class="top">
+  <section class="frames-container">
+    <header class="video-header">Sample Video</header>
+    <div class="frame-img">
+      <div class="resizable-container" [style.height]="videoFrameRef.nativeElement?.src ? '' : '100%'"
+        [style.width]="videoFrameRef.nativeElement?.src ? '' : '100%'" #imgContainer
+        [class.empty-placeholder]="!nextFrame">
+        <ngx-ui-loader [loaderId]="'buffer'"></ngx-ui-loader>
+        <img class="video-frame" #videoFrame (load)="videoFrameLoaded()">
+        <label class="subtitle-text" [hidden]="!subtitleText">{{ subtitleText }}</label>
+      </div>
     </div>
-  </div>
-</section>
-<section class="resize-container">
-  <header class="video-header">Size Options</header>
-  <div class="resize-options">
-    <ul class="options">
-      <li class="list-item" [class.active]="size === 'original'" (click)="resizeVideo('original')">
-        <img src="./assets/icons/ic-original.svg" class="resize-icon">
-        <label class="resize-label">
-          <span>Original</span>
-          <small></small>
-        </label>
-      </li>
-      <li class="list-item" [class.active]="size === 'landscape'" (click)="resizeVideo('landscape')">
-        <img src="./assets/icons/ic-landscape.svg" class="resize-icon">
-        <label class="resize-label">
-          <span>Landscape</span>
-          <small>16:9</small>
-        </label>
-      </li>
-      <li class="list-item" [class.active]="size === 'portrait'" (click)="resizeVideo('portrait')">
-        <img src="./assets/icons/ic-portrait.svg" class="resize-icon">
-        <label class="resize-label">
-          <span>Portrait</span>
-          <small>9:16</small>
-        </label>
-      </li>
-      <li class="list-item" [class.active]="size === 'square'" (click)="resizeVideo('square')">
-        <img src="./assets/icons/ic-square.svg" class="resize-icon">
-        <label class="resize-label">
-          <span>Square</span>
-          <small>1:1</small>
-        </label>
-      </li>
-    </ul>
-  </div>
-</section>
-<section class="actions-container">
-  <button class="btn-play" [class.disabled]="addFrameStep" (click)="!isPlaying ? startVideo() : pauseVideo()">
+  </section>
+  <section class="resize-container">
+    <header class="video-header">Size Options</header>
+    <div class="resize-options">
+      <ul class="options">
+        <li class="list-item" [class.active]="size === 'original'" (click)="resizeVideo('original')">
+          <img src="./assets/icons/ic-original.svg" class="resize-icon">
+          <label class="resize-label">
+            <span>Original</span>
+            <small></small>
+          </label>
+        </li>
+        <li class="list-item" [class.active]="size === 'landscape'" (click)="resizeVideo('landscape')">
+          <img src="./assets/icons/ic-landscape.svg" class="resize-icon">
+          <label class="resize-label">
+            <span>Landscape</span>
+            <small>16:9</small>
+          </label>
+        </li>
+        <li class="list-item" [class.active]="size === 'portrait'" (click)="resizeVideo('portrait')">
+          <img src="./assets/icons/ic-portrait.svg" class="resize-icon">
+          <label class="resize-label">
+            <span>Portrait</span>
+            <small>9:16</small>
+          </label>
+        </li>
+        <li class="list-item" [class.active]="size === 'square'" (click)="resizeVideo('square')">
+          <img src="./assets/icons/ic-square.svg" class="resize-icon">
+          <label class="resize-label">
+            <span>Square</span>
+            <small>1:1</small>
+          </label>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+<footer class="actions-container">
+  <button class="btn-play" [class.paused]="!isPlaying" [class.disabled]="buffering || addFrameStep" (click)="!isPlaying ? startVideo() : pauseVideo()">
     <img src="./assets/icons/ic-play.svg">
   </button>
 
@@ -53,8 +56,8 @@
     class="subtitle-input" placeholder="Enter Subtitle Text here">
 
   <div class="add-frame-actions">
-    <label class="file-name" [hidden]="!selectedFile?.name">{{ selectedFile?.name }}</label>
-    <div class="actions">
+    <label class="file-name" [style.visibility]="(!addFrameStep || !nextFrameData?.name) ? 'hidden' : ''">{{ nextFrameData?.name }}</label>
+    <div class="actions" [class.disabled]="buffering">
       <button class="btn add-frame" [class.disabled]="isPlaying" [hidden]="addFrameStep > 1"
         (click)="clickedAddFrame()">{{ addFrameStep === 1 ?
         'Upload frame' : 'Add a frame' }}</button>
@@ -74,12 +77,11 @@
       </div>
     </div>
   </div>
-</section>
+</footer>
 
 <div hidden>
   <!-- Preloading a 50 images at a time before the animation runs -->
-  <img *ngFor="let item of loadImgArray; let i = index" (load)="imagePreLoaded(i)" (error)="imagePreLoaded(i)"
-    [src]="(framesBaseURL + '/s_000' + '0000'.substr(item.toString().length - 1) + item + '.jpg')">
+  <img *ngFor="let frame of imagePreloaderArray, let i = index" (load)="imagePreLoaded(i)" (error)="imagePreLoaded(i)" [src]="(framesBaseURL + '/s_000' + '0000'.substr(frame.toString().length - 1) + frame + '.jpg')">
 </div>
 
 <small class="fps-meter">@{{dynamicFPSMeter.toFixed(2)}} fps</small>

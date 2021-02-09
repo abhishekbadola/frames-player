@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-root',
@@ -6,75 +7,142 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  readonly framesBaseURL = `./assets/frames`;
+  private readonly frameStart = 0; // To start frame with predfined frame number
+  private readonly totalFrames = 11272;
+  private readonly bufferSize = 50;
+  private readonly preloadListCount = 4;
+  private readonly timePerFrameInMilliseconds = 100; // 1000(1 second) / 10(frames per second) = 100 ms per frame;
+
   private currentFrameID; // To animate frames
   private lastFrameTime = Date.now();
-  private lastFrameData; // To hold uploaded frame data
-  private loadedImagesCount = 0;
-  private isVideoFrameLoading = false; // To check whether the changed frame is loaded or not
+  private lastFrameData; // To hold the last shown frame data
 
-  private readonly totalFrames = 11272;
-  private timePerFrameInMilliseconds = 100; // 1000(1 second) / 10(frames per second) = 100 ms per frame;
-
-  readonly framesBaseURL = `https://abhishekbadola.github.io/frames-player/assets/frames`;
-  readonly preloadImgCount = 50; // Minimum images count to preload
-  readonly loadImgArray = []; // Starting with preload images count
-
-  nextFrame = 0;
+  buffering = false;
+  preloadedImagesCount = this.frameStart;
+  nextFrame = this.frameStart;
   isPlaying = false;
   size = 'original';
   subtitleText = '';
   timePerFrameInSeconds = this.timePerFrameInMilliseconds / 1000; // To manually enter time per frame in seconds
   addFrameStep = 0;
-  selectedFile;
   loadedImageArray = []; // To verify the set of loaded images
   dynamicFPSMeter = 10;
+  imagePreloaderArray = [];
+  nextFrameData; // To hold the next frame to be loaded
 
   @ViewChild('imgContainer', { static: true }) imgContainerRef: ElementRef;
   @ViewChild('videoFrame', { static: true }) videoFrameRef: ElementRef;
   @ViewChild('selectFiles', { static: true }) selectFilesRef: ElementRef;
 
+  constructor(private ngxService: NgxUiLoaderService) { }
+
   ngOnInit() {
-    for (let i = 0; i < this.preloadImgCount; i++) {
-      this.loadImgArray[i] = i + 1;
-    }
+    this.buffering = true;
+    this.ngxService.startLoader('buffer');
+    this.preloadImages();
   }
 
   videoFrameLoaded() {
-    this.isVideoFrameLoading = false;
+    if (this.nextFrame <= this.totalFrames) {
+      if (this.preloadedImagesCount === this.nextFrame) {
+        this.ngxService.startLoader('buffer');
+        this.buffering = true;
+
+        this.preloadImages();
+
+        cancelAnimationFrame(this.currentFrameID);
+        return;
+      }
+    }
   }
 
-  imagePreLoaded(index) {
+  imagePreLoaded() {
     // Keeping a delay to avoid UI blocking
     const timeout = setTimeout(() => {
-      this.loadedImageArray[index] = this.loadImgArray[index];
+      this.preloadedImagesCount++;
+      if (this.preloadedImagesCount === this.totalFrames || (this.preloadedImagesCount - this.nextFrame) >= this.bufferSize) {
+        // If all images has been preloaded or if the buffersize is reached
+        if (this.buffering && this.isPlaying) {
+          // If buffering is on and video was in playing mode
+          this.startVideo();
+        }
+
+        this.buffering = false;
+        this.ngxService.stopLoader('buffer');
+      }
+
+      if (this.preloadedImagesCount < this.totalFrames && this.preloadedImagesCount % this.preloadListCount === 0) {
+        // When previous set of images is loaded completely
+        this.preloadImages();
+      };
+
       clearTimeout(timeout);
     }, 0);
   }
 
-  loadVideoFrame() {
+  private preloadImages() {
+    if (!this.nextFrame && this.preloadedImagesCount !== this.bufferSize) {
+      // If first time preloading, when video is not played yet
+      for (let i = 0; i < this.preloadListCount; i++) {
+        if (i <= this.totalFrames) {
+          if (this.preloadedImagesCount) {
+            // If previous set of images preloaded
+            this.imagePreloaderArray[i] += this.preloadListCount;
+          } else {
+            // If no image is preloaded yet
+            this.imagePreloaderArray[i] = this.nextFrame + i + 1;
+          }
+        } else {
+          break;
+        }
+      }
+    } else {
+      // If the video is buffering while playing
+      for (let i = 0; i < this.preloadListCount; i++) {
+        const imagesCount = this.imagePreloaderArray[i] + this.preloadListCount;
+        if (imagesCount <= this.totalFrames) {
+          this.imagePreloaderArray[i] = imagesCount;
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  private loadVideoFrame() {
     const now = Date.now();
     const diff = now - this.lastFrameTime;
-    const timePerFrame = (this.lastFrameData || {} as any).millisecondsPerFrame || this.timePerFrameInMilliseconds;
+    let timePerFrame = (this.lastFrameData || {} as any).millisecondsPerFrame || this.timePerFrameInMilliseconds;
 
-    if (diff >= timePerFrame && !this.isVideoFrameLoading) {
+    if (diff >= timePerFrame) {
       // If the page is not visible
       // That is when you switch tabs or any window
-      let imgName = 's_000' + '0000'.substr(this.nextFrame.toString().length - 1) + this.nextFrame;
-      let imgPath = `${this.framesBaseURL}/${imgName}.jpg`;
+      let imgName = '';
+      let imgPath = '';
 
-      this.isVideoFrameLoading = true;
+      if (this.nextFrameData) {
+        const frameData = this.nextFrameData || {};
+        imgName = frameData.name || '';
+        imgPath = frameData.src || '';
+        timePerFrame = frameData.millisecondsPerFrame || this.timePerFrameInMilliseconds
+        this.nextFrameData = null;
+        this.nextFrame--; // Update count for loading next frame
+      } else {
+        imgName = `s_000${'0000'.substr(this.nextFrame.toString().length - 1)}${this.nextFrame}`;
+        imgPath = `${this.framesBaseURL}/${imgName}.jpg`;
+        timePerFrame = this.timePerFrameInMilliseconds;
+      }
+
       (this.videoFrameRef.nativeElement as HTMLImageElement).src = imgPath;
 
       this.lastFrameData = {
         name: `${imgName}.jpg`,
         src: imgPath,
-        millisecondsPerFrame: this.timePerFrameInMilliseconds
+        millisecondsPerFrame: timePerFrame
       };
 
-      this.preloadImages();
-
       this.nextFrame++; // Update count for loading next frame
-      this.loadedImagesCount++;
 
       this.lastFrameTime = now;
 
@@ -82,75 +150,42 @@ export class AppComponent {
       this.dynamicFPSMeter = 1000 / diff;
     }
 
-    if (this.nextFrame < this.totalFrames) {
+    if (this.nextFrame >= 1 && this.nextFrame <= this.totalFrames) {
       // For better performance, using requestAnimationFrame API
       this.currentFrameID = requestAnimationFrame(this.loadVideoFrame.bind(this));
     }
   }
 
-  preloadImages(keepLoading = false) {
-    if (this.loadImgArray[this.loadImgArray.length - 1] >= this.totalFrames) {
-      return;
-    }
-
-    // If already set image sources are loaded
-    if (this.loadedImageArray.length === this.preloadImgCount) {
-      // If the frame sequence reaches at multiple of 50
-      if (this.loadedImagesCount % this.preloadImgCount === 0) {
-        this.loadedImageArray = [];
-        // Then reset image resources to load new images in advance
-        for (let i = 0; i < this.preloadImgCount; i++) {
-          const nextImageCount = this.loadImgArray[i] + this.preloadImgCount;
-          if (nextImageCount >= this.totalFrames) {
-            return;
-          } else {
-            this.loadImgArray[i] = nextImageCount;
-          }
-        }
-      }
-      if (keepLoading) {
-        // If player is paused or running in background keep the advance image loading
-        this.loadedImagesCount++;
-        this.checkIfImagesArePreLoaded();
-      }
-    } else {
-      // If previously set image sources are still pending
-      this.checkIfImagesArePreLoaded();
-    }
-  }
-
-  private checkIfImagesArePreLoaded() {
-    const timeout = setTimeout(() => {
-      this.preloadImages(true);
-      clearTimeout(timeout);
-    }, 0);
-  }
-
   startVideo() {
+    if (this.buffering && !this.isPlaying) {
+      this.ngxService.startLoader('buffer');
+    }
+
     // Play video
     this.isPlaying = true;
-    if (!this.nextFrame) {
-      this.nextFrame++;
-      this.loadedImagesCount = this.nextFrame;
+
+    if (!this.buffering) {
+      if (!this.nextFrame) {
+        this.nextFrame++;
+      }
+
+      this.loadVideoFrame();
     }
-    this.lastFrameTime = Date.now();
-    this.loadVideoFrame();
   }
 
   pauseVideo() {
-    // Pausing video at current frame
-    this.isPlaying = false;
-    cancelAnimationFrame(this.currentFrameID);
+    if (this.buffering) {
+      this.ngxService.stopLoader('buffer');
+    }
 
-    // Keep lazy loading images on while the video frames are pause
-    this.checkIfImagesArePreLoaded();
+    this.isPlaying = false;
+    cancelAnimationFrame(this.currentFrameID); // Pausing video at current frame
     return;
   }
 
   resizeVideo(size: string) {
     let width;
     let fit = 'cover';
-    let containerHeight = '100%'
 
     this.size = size;
 
@@ -171,10 +206,8 @@ export class AppComponent {
       default:
         width = '';
         fit = '';
-        containerHeight = '';
     }
 
-    this.imgContainerRef.nativeElement.style.height = containerHeight;
     this.imgContainerRef.nativeElement.style.width = width;
     this.videoFrameRef.nativeElement.style.width = width;
     this.videoFrameRef.nativeElement.style['object-fit'] = fit;
@@ -188,7 +221,7 @@ export class AppComponent {
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
-        this.selectedFile = {
+        this.nextFrameData = {
           name: file.name,
           src: e.target.result as string,
           millisecondsPerFrame: this.timePerFrameInMilliseconds
@@ -207,23 +240,15 @@ export class AppComponent {
     } else if (!this.addFrameStep) {
       this.addFrameStep++;
       this.selectFilesRef.nativeElement.click();
-    } else if (this.selectedFile) {
+    } else if (this.nextFrameData) {
       this.addFrameStep = 2;
     }
   }
 
   submitAddFrame() {
     if (this.timePerFrameInSeconds > 0) {
-      this.selectedFile.millisecondsPerFrame = this.timePerFrameInSeconds * 1000;
-      this.lastFrameData = {
-        ...this.selectedFile
-      };
-
-      const img = (this.videoFrameRef.nativeElement as HTMLImageElement);
-      img.src = this.selectedFile.src;
-
-      this.selectedFile = null;
-      this.timePerFrameInSeconds = this.timePerFrameInMilliseconds * 1000;
+      this.nextFrameData.millisecondsPerFrame = this.timePerFrameInSeconds * 1000;
+      this.timePerFrameInSeconds = this.timePerFrameInMilliseconds / 1000;
       this.addFrameStep = 0;
     } else {
       console.error('Enter a valid number for time in seconds');
@@ -233,7 +258,7 @@ export class AppComponent {
   cancelAddFrame() {
     this.selectFilesRef.nativeElement.value = '';
     this.addFrameStep = 0;
-    this.selectedFile = null;
-    this.timePerFrameInSeconds = this.timePerFrameInMilliseconds * 1000;
+    this.nextFrameData = null;
+    this.timePerFrameInSeconds = this.timePerFrameInMilliseconds / 1000;
   }
 }
