@@ -81,7 +81,7 @@
 
 <div hidden>
   <!-- Preloading a 50 images at a time before the animation runs -->
-  <img *ngFor="let frame of imagePreloaderArray, let i = index" (load)="imagePreLoaded(i)" (error)="imagePreLoaded(i)" [src]="(framesBaseURL + '/s_000' + '0000'.substr(frame.toString().length - 1) + frame + '.jpg')">
+  <img *ngFor="let frame of imagePreloaderArray, let i = index" (load)="imagePreLoaded()" (error)="imagePreLoaded()" [src]="(framesBaseURL + '/s_000' + '0000'.substr(frame.toString().length - 1) + frame + '.jpg')">
 </div>
 
 <small class="fps-meter">@{{dynamicFPSMeter.toFixed(2)}} fps</small>
