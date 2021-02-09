@@ -7,9 +7,10 @@ Features:
 
 - Showing frames at 10 fps
 - Play or pause video
-- **Resize frame** options.
+- **Resize frame** options
 - Aspect ratios for given resize options Original - **default**, Landscape - **16 : 9 ratio**, Portrait **9 : 16**, Square - **1 : 1** )
-- Adding a new frame in paused state. **Enter duration in seconds** for which the added frame will be shown (Rest of the frames play after that time)
+- Adding a new frame in paused state. **Enter duration in seconds** for which the added frame will be shown (Click on play and rest of the frames play after that time)
+- **Write Subtitle** on a frame in realtime (Only in paused state)
 - **Frame rate speed** at bottom left
 - Show **buffering** if the internet speed is slow 
 
@@ -20,6 +21,8 @@ Implementation approach:
 - Javascript doesn't gurantee you to play at specified frame speed but **requestAnimationFrame** helps in managing better performance of webpage and saving battery life.
 - Added service worker to cache loaded frames (for better performance)
 - Implemented buffering (taking buffer size as 50 frames) so that the frames doesn't lag or become choppy. That's how the frame rate is also maintained
+- Frame can be added in paused state. Clicking on play again displays the frame for the duration you entered
+- Text entered will be reflected in realtime as subtitle above the frame
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.5.
 
