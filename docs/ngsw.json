@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1612896110160,
+  "timestamp": 1612918639322,
   "index": "https://abhishekbadola.github.io/frames-player/index.html",
   "assetGroups": [
     {
@@ -8,8 +8,8 @@
       "installMode": "prefetch",
       "updateMode": "prefetch",
       "urls": [
-        "https://abhishekbadola.github.io/frames-player/main-es2015.ad46da98670f5dfe7f0b.js",
-        "https://abhishekbadola.github.io/frames-player/main-es5.ad46da98670f5dfe7f0b.js",
+        "https://abhishekbadola.github.io/frames-player/main-es2015.9f811e12a888ebafd261.js",
+        "https://abhishekbadola.github.io/frames-player/main-es5.9f811e12a888ebafd261.js",
         "https://abhishekbadola.github.io/frames-player/manifest.webmanifest",
         "https://abhishekbadola.github.io/frames-player/polyfills-es2015.ffa9bb4e015925544f91.js",
         "https://abhishekbadola.github.io/frames-player/polyfills-es5.44547b4d4a23c72d0f9c.js",
@@ -22597,8 +22597,8 @@
     "https://abhishekbadola.github.io/frames-player/assets/icons/ic-play.svg": "7c402f65bbd102a884a73bb719eda47dd069630e",
     "https://abhishekbadola.github.io/frames-player/assets/icons/ic-portrait.svg": "8822dddab8abe5954af76706769b278c0e10a97f",
     "https://abhishekbadola.github.io/frames-player/assets/icons/ic-square.svg": "3ec4b21520fb01a1c55f9b7165d520f549f3a99d",
-    "https://abhishekbadola.github.io/frames-player/main-es2015.ad46da98670f5dfe7f0b.js": "7563f738dd03e36fbe7586df66cbf60b26035009",
-    "https://abhishekbadola.github.io/frames-player/main-es5.ad46da98670f5dfe7f0b.js": "0561c76a726f5a80fcb88e22d7366f8689b2df3a",
+    "https://abhishekbadola.github.io/frames-player/main-es2015.9f811e12a888ebafd261.js": "492426f162de65083c451773e9bb8400d797770f",
+    "https://abhishekbadola.github.io/frames-player/main-es5.9f811e12a888ebafd261.js": "c3bca393ee883d4d9ee16f64f1126ceec66886e2",
     "https://abhishekbadola.github.io/frames-player/manifest.webmanifest": "f9423dceb86e960489f3bc1c2f4685a0d5ab401f",
     "https://abhishekbadola.github.io/frames-player/polyfills-es2015.ffa9bb4e015925544f91.js": "79b2ff5ba292ae9e56f0b43982b9e76d9ddcf285",
     "https://abhishekbadola.github.io/frames-player/polyfills-es5.44547b4d4a23c72d0f9c.js": "ee074d163edc0215cfc1ce2bfe58fcab8cf13024",

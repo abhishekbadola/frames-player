@@ -3,6 +3,8 @@
 
 This is a video player which shows some predefined frames at maximum speed of **10 frames per second** (The normal frame rate of a browser is 60 frames per second).
 
+**[Click here](https://abhishekbadola.github.io/frames-player)** to view
+
 Features:
 
 - Showing frames at 10 fps
@@ -20,7 +22,7 @@ Implementation approach:
 - Frames are paused while the tab/window is switched, that is if you are on different screen.
 - Javascript doesn't gurantee you to play at specified frame speed but **requestAnimationFrame** helps in managing better performance of webpage and saving battery life.
 - Added service worker to cache loaded frames (for better performance)
-- Implemented buffering (taking buffer size as 50 frames) so that the frames doesn't lag or become choppy. That's how the frame rate is also maintained
+- Implemented buffering (Maintaining buffer size as 10 frames and hitting 4 http requests at a time to get the frames) so that the video doesn't lag or become choppy. That's how the frame rate is also maintained
 - Frame can be added in paused state. Clicking on play again displays the frame for the duration you entered
 - Text entered will be reflected in realtime as subtitle above the frame
 

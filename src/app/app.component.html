@@ -2,11 +2,11 @@
   <section class="frames-container">
     <header class="video-header">Sample Video</header>
     <div class="frame-img">
-      <div class="resizable-container" [style.height]="videoFrameRef.nativeElement?.src ? '' : '100%'"
-        [style.width]="videoFrameRef.nativeElement?.src ? '' : '100%'" #imgContainer
-        [class.empty-placeholder]="!nextFrame">
+      <div class="resizable-container" [style.height]="currentFrameData?.src ? '' : '100%'"
+        [style.width]="currentFrameData?.src ? '' : '100%'" #imgContainer
+        [class.empty-placeholder]="!currentFrameData">
         <ngx-ui-loader [loaderId]="'buffer'"></ngx-ui-loader>
-        <img class="video-frame" #videoFrame (load)="videoFrameLoaded()">
+        <img class="video-frame" [src]="currentFrameData?.src | safeResourceUrl" #videoFrame (load)="videoFrameLoaded(currentFrameData)">
         <label class="subtitle-text" [hidden]="!subtitleText">{{ subtitleText }}</label>
       </div>
     </div>
@@ -79,9 +79,4 @@
   </div>
 </footer>
 
-<div hidden>
-  <!-- Preloading a 50 images at a time before the animation runs -->
-  <img *ngFor="let frame of imagePreloaderArray, let i = index" (load)="imagePreLoaded()" (error)="imagePreLoaded()" [src]="(framesBaseURL + '/s_000' + '0000'.substr(frame.toString().length - 1) + frame + '.jpg')">
-</div>
-
-<small class="fps-meter">@{{dynamicFPSMeter.toFixed(2)}} fps</small>
+<small class="fps-meter" [hidden]="!isPlaying">{{dynamicFPSMeter.toFixed(2)}} fps</small>
